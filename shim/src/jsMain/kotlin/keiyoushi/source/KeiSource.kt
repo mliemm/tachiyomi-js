@@ -13,7 +13,7 @@ import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.model.SMangaUpdate
+import eu.kanade.tachiyomi.source.model.SMangaUpdate as LibSMangaUpdate
 import eu.kanade.tachiyomi.source.online.HttpSource
 import keiyoushi.network.BaseUrlFetchInterceptor
 import keiyoushi.network.BrowserCallInterceptor
@@ -294,7 +294,7 @@ abstract class KeiSource : HttpSource() {
         chapters: List<SChapter>,
         fetchDetails: Boolean,
         fetchChapters: Boolean,
-    ): SMangaUpdate {
+    ): LibSMangaUpdate {
         check(fetchDetails || fetchChapters) { "getMangaUpdate called with nothing to fetch (fetchDetails=false, fetchChapters=false)" }
 
         val key = manga.url
@@ -303,9 +303,9 @@ abstract class KeiSource : HttpSource() {
         try {
             val update = fetchMangaUpdate(manga, chapters, fetchDetails, fetchChapters)
 
-            return SMangaUpdate(
-                manga = update.manga.apply { initialized = true },
-                chapters = update.chapters,
+            return LibSMangaUpdate(
+                manga = update.manga().apply { initialized = true },
+                chapters = update.chapters(),
             )
         } finally {
             updatesInFlight.remove(key)
